@@ -1,2 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# virtualenv
 venv/
+ENV/
+
 .idea/
+
+# hdf5
+*.h5
+*.hdf5
