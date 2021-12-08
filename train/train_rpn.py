@@ -49,8 +49,8 @@ base_net_weights = vgg.get_weight_path()
 
 #### load images here ####
 # get voc images
-all_imgs, classes_count, class_mapping = get_data(C.train_path)
-valid_imgs, valid_classes_count, valid_class_mapping = get_data(C.valid_path)
+all_imgs, classes_count, class_mapping = get_data(C.train_path+'/_annotations.csv')
+valid_imgs, valid_classes_count, valid_class_mapping = get_data(C.valid_path+'/_annotations.csv')
 
 print(classes_count)
 
