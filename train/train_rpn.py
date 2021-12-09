@@ -4,14 +4,12 @@ import pprint
 import keras
 import time
 import numpy as np
-from optparse import OptionParser
 import pickle
 import os
 
-from keras import backend as K
 from tensorflow.keras.optimizers import Adam
-from keras.layers import Input
-from keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
 from frcnn import data_generators
 from frcnn import config
 from frcnn import losses as losses
@@ -49,8 +47,8 @@ base_net_weights = vgg.get_weight_path()
 
 #### load images here ####
 # get voc images
-all_imgs, classes_count, class_mapping = get_data(C.train_path+'/_annotations.csv')
-valid_imgs, valid_classes_count, valid_class_mapping = get_data(C.valid_path+'/_annotations.csv')
+all_imgs, classes_count, class_mapping = get_data(C.train_path)
+#valid_imgs, valid_classes_count, valid_class_mapping = get_data(C.valid_path+'/_annotations.csv')
 
 print(classes_count)
 
@@ -85,10 +83,8 @@ val_imgs = [s for s in all_imgs if s['imageset'] == 'test']
 print('Num train samples {}'.format(len(train_imgs)))
 print('Num val samples {}'.format(len(val_imgs)))
 
-data_gen_train = data_generators.get_anchor_gt(train_imgs, classes_count, C, vgg.get_img_output_length,
-                                               K.image_dim_ordering(), mode='train')
-data_gen_val = data_generators.get_anchor_gt(val_imgs, classes_count, C, vgg.get_img_output_length,
-                                             K.image_dim_ordering(), mode='val')
+data_gen_train = data_generators.get_anchor_gt(C.train_path,train_imgs, C, vgg.get_img_output_length,mode='train')
+data_gen_val = data_generators.get_anchor_gt(C.train_path,val_imgs, C, vgg.get_img_output_length, mode='val')
 
 # set input shape
 input_shape_img = (None, None, 3)
@@ -103,24 +99,32 @@ shared_layers = vgg.nn_base(img_input, trainable=True)
 # define the RPN, built on the base layers
 # rpn outputs regression and cls
 num_anchors = len(C.anchor_box_scales) * len(C.anchor_box_ratios)
-rpn = vgg.rpn(shared_layers, num_anchors)
+rpn = vgg.rpn_layer(shared_layers, num_anchors)
+
+classifier = vgg.classifier_layer(shared_layers, roi_input, C.num_rois, nb_classes=len(classes_count))
 
 model_rpn = Model(img_input, rpn[:2])
+model_classifier = Model([img_input, roi_input], classifier)
+
+model_all = Model([img_input, roi_input], rpn[:2] + classifier)
 
 # load weights from pretrain
 try:
     print('loading weights from {}'.format(C.base_net_weights))
     model_rpn.load_weights(C.base_net_weights, by_name=True)
-    #	model_classifier.load_weights(C.base_net_weights, by_name=True)
+    model_classifier.load_weights(C.base_net_weights, by_name=True)
     print("loaded weights!")
 except:
     print('Could not load pretrained model weights. Weights can be found in the keras application folder \
 		https://github.com/fchollet/keras/tree/master/keras/applications')
 
 # compile model
-optimizer = Adam(lr=1e-5, clipnorm=0.001)
+optimizer = Adam(learning_rate=1e-5)
+optimizer_classifier = Adam(learning_rate=1e-5)
 model_rpn.compile(optimizer=optimizer, loss=[losses.rpn_loss_cls(num_anchors), losses.rpn_loss_regr(num_anchors)])
 model_rpn.summary()
+model_classifier.compile(optimizer=optimizer_classifier, loss=[losses.class_loss_cls, losses.class_loss_regr(len(classes_count)-1)], metrics={'dense_class_{}'.format(len(classes_count)): 'accuracy'})
+model_all.compile(optimizer='sgd', loss='mae')
 
 # write training misc here
 epoch_length = 1000
