@@ -4,9 +4,9 @@ class Config:
 
 	def __init__(self):
 		# Set path
-		self.train_path = '../data/train'
-		self.test_path = '../data/test'
-		self.valid_path = '../data/valid'
+		self.train_path = '../data/train/'
+		self.test_path = '../data/test/'
+		self.valid_path = '../data/valid/'
 
 		# Print the process or not
 		self.verbose = True

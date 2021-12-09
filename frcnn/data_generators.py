@@ -247,10 +247,11 @@ def get_new_img_size(width, height, img_min_side=300):
     return resized_width, resized_height
 
 
-def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
+def get_anchor_gt(path,all_img_data, C, img_length_calc_function, mode='train'):
     """ Yield the ground-truth anchors as Y (labels)
 
     Args:
+        path: path to images file
         all_img_data: list(filepath, width, height, list(bboxes))
         C: config
         img_length_calc_function: function to calculate final layer's feature map (of base model) size according to input image size
@@ -271,9 +272,9 @@ def get_anchor_gt(all_img_data, C, img_length_calc_function, mode='train'):
                 # read in image, and optionally add augmentation
 
                 if mode == 'train':
-                    img_data_aug, x_img = augment(img_data, C, augment=True)
+                    img_data_aug, x_img = augment(path,img_data, C, augment=True)
                 else:
-                    img_data_aug, x_img = augment(img_data, C, augment=False)
+                    img_data_aug, x_img = augment(path,img_data, C, augment=False)
 
                 (width, height) = (img_data_aug['width'], img_data_aug['height'])
                 (rows, cols, _) = x_img.shape
