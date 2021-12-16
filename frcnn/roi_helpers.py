@@ -148,7 +148,7 @@ def apply_regr(x, y, w, h, tx, ty, tw, th):
 
 
 def calc_iou(R, img_data, C, class_mapping):
-    """Converts from (x1,y1,x2,y2) to (x,y,w,h) format
+    """Converts from (xmin,ymin,xmax,ymax) to (x,y,w,h) format
 
     Args:
         R: bboxes, probs
@@ -163,10 +163,10 @@ def calc_iou(R, img_data, C, class_mapping):
     for bbox_num, bbox in enumerate(bboxes):
         # get the GT box coordinates, and resize to account for image resizing
         # gta[bbox_num, 0] = (40 * (600 / 800)) / 16 = int(round(1.875)) = 2 (x in feature map)
-        gta[bbox_num, 0] = int(round(bbox['x1'] * (resized_width / float(width)) / C.rpn_stride))
-        gta[bbox_num, 1] = int(round(bbox['x2'] * (resized_width / float(width)) / C.rpn_stride))
-        gta[bbox_num, 2] = int(round(bbox['y1'] * (resized_height / float(height)) / C.rpn_stride))
-        gta[bbox_num, 3] = int(round(bbox['y2'] * (resized_height / float(height)) / C.rpn_stride))
+        gta[bbox_num, 0] = int(round(bbox['xmin'] * (resized_width / float(width)) / C.rpn_stride))
+        gta[bbox_num, 1] = int(round(bbox['xmax'] * (resized_width / float(width)) / C.rpn_stride))
+        gta[bbox_num, 2] = int(round(bbox['ymin'] * (resized_height / float(height)) / C.rpn_stride))
+        gta[bbox_num, 3] = int(round(bbox['ymax'] * (resized_height / float(height)) / C.rpn_stride))
 
     x_roi = []
     y_class_num = []
