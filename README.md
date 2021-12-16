@@ -2,6 +2,8 @@
 Deep Learning student project on vehicle detection. This code is huge due to the size of our weights and the datasets comitted for teacher rating.
 Thi code was inspired from this [repository](https://github.com/kentaroy47/frcnn-from-scratch-with-keras/blob/master/test_frcnn.py) but only implicate a VGG16 support.
 
+![image](https://github.com/paulmrq/FasterR-CNNVehicleDetection/blob/main/output/12.png)
+
 ### Architecture
 - **RPN with VGG16 as CNN backbone** 
 
