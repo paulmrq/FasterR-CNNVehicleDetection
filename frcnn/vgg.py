@@ -5,7 +5,7 @@ from .RoiPoolingConv import RoiPoolingConv
 
 
 def get_weight_path():
-    return 'pretrain/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
+    return './pretrain/vgg16_weights_tf_dim_ordering_tf_kernels.h5'
 
 
 def get_img_output_length(width, height):
@@ -50,7 +50,7 @@ def nn_base(input_tensor=None, trainable=False):
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
-    # x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
 
     return x
 
