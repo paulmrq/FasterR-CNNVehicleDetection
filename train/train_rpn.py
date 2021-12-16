@@ -19,10 +19,10 @@ from frcnn.data_parser import get_data
 
 # make dirs to save rpn
 # "./models/rpn/rpn"
-if not os.path.isdir("models"):
-    os.mkdir("models")
-if not os.path.isdir("models/rpn"):
-    os.mkdir("models/rpn")
+if not os.path.isdir(".train/models"):
+    os.mkdir(".train/models")
+if not os.path.isdir(".train/models/rpn"):
+    os.mkdir(".train/models/rpn")
 
 
 # pass the settings from the command line, and persist them in the config object
@@ -33,7 +33,7 @@ C.use_horizontal_flips = False
 C.use_vertical_flips = False
 C.rot_90 = False
 
-C.model_path = './model_frcnn.hdf5'
+C.model_path = '.train/model_frcnn.hdf5'
 C.num_rois = 10
 
 # we will use vgg

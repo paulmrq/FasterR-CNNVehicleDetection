@@ -27,6 +27,7 @@ sys.setrecursionlimit(40000)
 parser = OptionParser()
 
 parser.add_option("--rpn", dest="rpn_weight_path", help="Input path for rpn.", default=None)
+#parser.add_option("--rpn", dest="rpn_weight_path", help="Input path for rpn.", default=None)
 parser.add_option("--load", dest="load", help="What model to load", default=None)
 
 (options, args) = parser.parse_args()
@@ -35,11 +36,12 @@ parser.add_option("--load", dest="load", help="What model to load", default=None
 C = config.Config()
 
 # set data argumentation
-C.use_horizontal_flips = False
-C.use_vertical_flips = False
-C.rot_90 = False
+C.use_horizontal_flips = True
+C.use_vertical_flips = True
+C.rot_90 = True
 
-C.model_path = './model/model_frcnn.hdf5'
+# input './train/models/vgg16/model_frcnn_vgg.hdf5'
+C.model_path = options.load
 C.num_rois = 10
 
 # we will use vgg
@@ -57,6 +59,11 @@ all_imgs, classes_count, class_mapping = get_data(C.train_path)
 # valid_imgs, valid_classes_count, valid_class_mapping = get_data(C.valid_path+'/_annotations.csv')
 
 print(classes_count)
+# mkdir to save models.
+if not os.path.isdir("train/models"):
+  os.mkdir("train/models")
+if not os.path.isdir("train/models/"+C.network):
+  os.mkdir(os.path.join("train/models", C.network))
 
 # add background class as 21st class
 if 'bg' not in classes_count:
@@ -119,19 +126,28 @@ try:
     print('loading weights from {}'.format(C.base_net_weights))
     model_rpn.load_weights(C.base_net_weights, by_name=True)
     model_classifier.load_weights(C.base_net_weights, by_name=True)
-    print("loaded weights!")
+    print("VGG weights loaded")
 except:
     print('Could not load pretrained model weights. Weights can be found in the keras application folder \
 		https://github.com/fchollet/keras/tree/master/keras/applications')
 
 # may use this to resume from rpn models or previous training. specify either rpn or frcnn model to load
 if options.load is not None:
-    print("loading previous model from ", options.load)
-    model_rpn.load_weights(options.load, by_name=True)
-    model_classifier.load_weights(options.load, by_name=True)
+    try:
+        print("loading previous model from ", C.model_path )
+        model_rpn.load_weights(C.model_path , by_name=True)
+        model_classifier.load_weights(C.model_path , by_name=True)
+        print(C.model_path+' loaded')
+    except:
+        print('Could not load model weights.')
 elif options.rpn_weight_path is not None:
     print("loading RPN weights from ", options.rpn_weight_path)
-    model_rpn.load_weights(options.rpn_weight_path, by_name=True)
+    try:
+        model_rpn.load_weights(options.rpn_weight_path, by_name=True)
+        print("RPN weights loaded")
+    except:
+        print('Could not load pretrained RPN weights.')
+
 else:
     print("no previous model was loaded")
 
@@ -148,8 +164,8 @@ model_classifier.compile(optimizer=optimizer_classifier,
 model_all.compile(optimizer='sgd', loss='mae')
 
 # write training misc here
-epoch_length = 1000
-num_epochs = 50
+epoch_length = 100
+num_epochs = 1
 iter_num = 0
 
 losses = np.zeros((epoch_length, 5))
@@ -170,8 +186,8 @@ for epoch_num in range(num_epochs):
 
     # first 3 epoch is warmup
     if epoch_num < 3 and options.rpn_weight_path is not None:
-        K.set_value(model_rpn.optimizer.lr, options.lr / 30)
-        K.set_value(model_classifier.optimizer.lr, options.lr / 3)
+        K.set_value(model_rpn.optimizer.lr, 1e-3 / 30)
+        K.set_value(model_classifier.optimizer.lr, 1e-3 / 3)
 
     while True:
         try:
@@ -181,14 +197,14 @@ for epoch_num in range(num_epochs):
                 print('Average number of overlapping bounding boxes from RPN = {} for {} previous iterations'.format(
                     mean_overlapping_bboxes, epoch_length))
                 if mean_overlapping_bboxes == 0:
+
                     print(
                         'RPN is not producing bounding boxes that overlap the ground truth boxes. Check RPN settings or keep training.')
             X, Y, img_data = next(data_gen_train)
-
             loss_rpn = model_rpn.train_on_batch(X, Y)
 
             P_rpn = model_rpn.predict_on_batch(X)
-            R = rpn_to_roi(P_rpn[0], P_rpn[1], C, K.image_dim_ordering(), use_regr=True, overlap_thresh=0.4,
+            R = rpn_to_roi(P_rpn[0], P_rpn[1], C, keras.backend.image_dim_ordering(), use_regr=True, overlap_thresh=0.4,
                                        max_boxes=300)
             # note: calc_iou converts from (x1,y1,x2,y2) to (x,y,w,h) format
             X2, Y1, Y2, IouS = calc_iou(R, img_data, C, class_mapping)
@@ -281,7 +297,7 @@ for epoch_num in range(num_epochs):
                     if C.verbose:
                         print('Total loss decreased from {} to {}, saving weights'.format(best_loss, curr_loss))
                     best_loss = curr_loss
-                    model_all.save_weights(C.model_path)
+                    model_all.save_weights('train/models/model_frcnn.hdf5')
 
                 break
 
