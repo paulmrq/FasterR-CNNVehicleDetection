@@ -1,5 +1,5 @@
 matplotlib
-tensorflow
+tensorflow==2.7.0
 Keras==2.2.4
 numpy
 opencv-python
