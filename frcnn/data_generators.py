@@ -81,10 +81,10 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
     gta = np.zeros((num_bboxes, 4))
     for bbox_num, bbox in enumerate(img_data['bboxes']):
         # get the GT box coordinates, and resize to account for image resizing
-        gta[bbox_num, 0] = bbox['x1'] * (resized_width / float(width))
-        gta[bbox_num, 1] = bbox['x2'] * (resized_width / float(width))
-        gta[bbox_num, 2] = bbox['y1'] * (resized_height / float(height))
-        gta[bbox_num, 3] = bbox['y2'] * (resized_height / float(height))
+        gta[bbox_num, 0] = bbox['xmin'] * (resized_width / float(width))
+        gta[bbox_num, 1] = bbox['xmax'] * (resized_width / float(width))
+        gta[bbox_num, 2] = bbox['ymin'] * (resized_height / float(height))
+        gta[bbox_num, 3] = bbox['ymax'] * (resized_height / float(height))
 
     # rpn ground truth
 
@@ -268,7 +268,6 @@ def get_anchor_gt(path,all_img_data, C, img_length_calc_function, mode='train'):
 
         for img_data in all_img_data:
             try:
-
                 # read in image, and optionally add augmentation
 
                 if mode == 'train':
@@ -284,6 +283,7 @@ def get_anchor_gt(path,all_img_data, C, img_length_calc_function, mode='train'):
 
                 # get image dimensions for resizing
                 (resized_width, resized_height) = get_new_img_size(width, height, C.im_size)
+
 
                 # resize the image so that smalles side is length = 300px
                 x_img = cv2.resize(x_img, (resized_width, resized_height), interpolation=cv2.INTER_CUBIC)
@@ -313,7 +313,7 @@ def get_anchor_gt(path,all_img_data, C, img_length_calc_function, mode='train'):
                 y_rpn_cls = np.transpose(y_rpn_cls, (0, 2, 3, 1))
                 y_rpn_regr = np.transpose(y_rpn_regr, (0, 2, 3, 1))
 
-                yield np.copy(x_img), [np.copy(y_rpn_cls), np.copy(y_rpn_regr)], img_data_aug, debug_img, num_pos
+                yield np.copy(x_img), [np.copy(y_rpn_cls), np.copy(y_rpn_regr)], img_data_aug
 
             except Exception as e:
                 print(e)

@@ -19,18 +19,18 @@ def augment(path,img_data, config, augment=True):
 		if config.use_horizontal_flips and np.random.randint(0, 2) == 0:
 			img = cv2.flip(img, 1)
 			for bbox in img_data_aug['bboxes']:
-				x1 = bbox['x1']
-				x2 = bbox['x2']
-				bbox['x2'] = cols - x1
-				bbox['x1'] = cols - x2
+				x1 = bbox['xmin']
+				x2 = bbox['xmax']
+				bbox['xmaax'] = cols - x1
+				bbox['xmin'] = cols - x2
 
 		if config.use_vertical_flips and np.random.randint(0, 2) == 0:
 			img = cv2.flip(img, 0)
 			for bbox in img_data_aug['bboxes']:
-				y1 = bbox['y1']
-				y2 = bbox['y2']
-				bbox['y2'] = rows - y1
-				bbox['y1'] = rows - y2
+				y1 = bbox['ymin']
+				y2 = bbox['ymax']
+				bbox['ymax'] = rows - y1
+				bbox['ymin'] = rows - y2
 
 		if config.rot_90:
 			angle = np.random.choice([0,90,180,270],1)[0]
@@ -46,25 +46,25 @@ def augment(path,img_data, config, augment=True):
 				pass
 
 			for bbox in img_data_aug['bboxes']:
-				x1 = bbox['x1']
-				x2 = bbox['x2']
-				y1 = bbox['y1']
-				y2 = bbox['y2']
+				x1 = bbox['xmin']
+				x2 = bbox['xmax']
+				y1 = bbox['ymin']
+				y2 = bbox['ymax']
 				if angle == 270:
-					bbox['x1'] = y1
-					bbox['x2'] = y2
-					bbox['y1'] = cols - x2
-					bbox['y2'] = cols - x1
+					bbox['xmin'] = y1
+					bbox['xmax'] = y2
+					bbox['ymin'] = cols - x2
+					bbox['ymax'] = cols - x1
 				elif angle == 180:
-					bbox['x2'] = cols - x1
-					bbox['x1'] = cols - x2
-					bbox['y2'] = rows - y1
-					bbox['y1'] = rows - y2
+					bbox['xmax'] = cols - x1
+					bbox['xmin'] = cols - x2
+					bbox['ymax'] = rows - y1
+					bbox['ymin'] = rows - y2
 				elif angle == 90:
-					bbox['x1'] = rows - y2
-					bbox['x2'] = rows - y1
-					bbox['y1'] = x1
-					bbox['y2'] = x2
+					bbox['xmin'] = rows - y2
+					bbox['xmax'] = rows - y1
+					bbox['ymin'] = x1
+					bbox['ymax'] = x2
 				elif angle == 0:
 					pass
 
