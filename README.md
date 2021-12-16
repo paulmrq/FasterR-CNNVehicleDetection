@@ -49,7 +49,7 @@ Place those weights in 'train/models/rpn'.
 Training will automatically create weights at ./train/models/model_frcnn.hdf5 that we can use for testing.
 ##Testing
 
-To use **our trained weights** (around 20 hours of computation) and start testing:
+To use **our trained weights** (around 20 hours of computation) and start testing. First of all download of weights [here](https://drive.google.com/file/d/1uKbDegYfr2n-tS9xusD-NBY_ILiWzohp/view?usp=sharing) and place it here: /train/models/model_frcnn.hdf5
 
     #start testing, default test path (if --p none) is ./data/test/ for images ./data/input/ for video, default --load is none
     python ./test/test_frcnn.py --load ./train/models/model_frcnn.hdf5

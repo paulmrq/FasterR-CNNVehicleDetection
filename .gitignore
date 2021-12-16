@@ -10,5 +10,5 @@ ENV/
 .idea/
 
 # hdf5
-voc.hdf5
-vgg16_weights_tf_dim_ordering_tf_kernels.h5
+*.hdf5
+*.h5
