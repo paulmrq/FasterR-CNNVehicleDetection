@@ -60,7 +60,7 @@ To use **our trained weights** (around 20 hours of computation) and start testin
 If we want to predict on a video, we need to pass the arguments '--type_media video' and to fill the input directory in ./data/input with a mp4 file
 
 
-###Sources: 
+### Sources: 
  - https://www.analyticsvidhya.com/blog/2018/11/implementation-faster-r-cnn-python-object-detection/
 
  - Faster R-CNN from scratch: https://github.com/kentaroy47/frcnn-from-scratch-with-keras/blob/master/test_frcnn.py
