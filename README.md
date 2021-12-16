@@ -1,7 +1,8 @@
 # FasterR-CNNVehicleDetection
 Deep Learning student project on vehicle detection. This code is huge due to the size of our weights and the datasets comitted for teacher rating.
 Thi code was inspired from this [repository](https://github.com/kentaroy47/frcnn-from-scratch-with-keras/blob/master/test_frcnn.py) but only implicate a VGG16 support.
-###Architecture
+
+### Architecture
 - **RPN with VGG16 as CNN backbone** 
 
 
@@ -12,18 +13,18 @@ Thi code was inspired from this [repository](https://github.com/kentaroy47/frcnn
 
 
 - **ROI pooling**
-###Datasets
+### Datasets
 **Homemade**: merged datasets from [Roboflow](https://public.roboflow.com/object-detection/vehicles-openimages) and Internet. The train,test, valid datasets are comitted especially for student purpose and then not included in the .gitignore 
 
-##Running scripts..
-###1. Requirements
-####a. Create environnement
+## Running scripts..
+### 1. Requirements
+#### a. Create environnement
 
 Install VENV environnement, requirements.txt and get pretrain VGG16 weights by running the script inside the cloned repository:
 
     ./install.sh
 
-####b. Download pretrained weights.
+#### b. Download pretrained weights.
 Using imagenet pretrained VGG16 weights will significantly speed up training.
 This shell script will create a pretrain directory and download the weights file to: 'pretrain/vgg16_weights_tf_dim_ordering_tf_kernels.h5'.
 
@@ -35,7 +36,7 @@ This shell script will create a pretrain directory and download the weights file
 - Optionnal : I recommend using the pretrained RPN model if you want to recompute a full training, which will stablize training. You can download the rpn model (VGG16) from here: https://drive.google.com/file/d/1IgxPP0aI5pxyPHVSM2ZJjN1p9dtE4_64/view?usp=sharing.
 Place those weights in 'train/models/rpn'.
 
-##Training
+## Training
     
     #sample training
     python ./train/train_frcnn.py 
@@ -47,7 +48,7 @@ Place those weights in 'train/models/rpn'.
     python ./train/train_frcnn.py --load ./train/models/model_frcnn.hdf5
 
 Training will automatically create weights at ./train/models/model_frcnn.hdf5 that we can use for testing.
-##Testing
+## Testing
 
 To use **our trained weights** (around 20 hours of computation) and start testing. First of all download of weights [here](https://drive.google.com/file/d/1uKbDegYfr2n-tS9xusD-NBY_ILiWzohp/view?usp=sharing) and place it here: /train/models/model_frcnn.hdf5
 
